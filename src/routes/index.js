@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const { unlink } = require('fs-extra');
+const path = require('path');
 
 const Image = require('../models/Image')
 
@@ -37,8 +38,9 @@ router.get('/image/:id', async (req, res) => {
 
 router.get('/image/:id/delete', async (req, res) => {
   const { id } = req.params;
-  await Image.findByIdAndDelete(id);
-  res.send('Image deleted');
+  const image = await Image.findByIdAndDelete(id);
+  await unlink(path.resolve('./src/public' + image.path));
+  res.redirect('/');
 });
 
 module.exports = router;
